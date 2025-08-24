@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure for student
+typedef struct Student {
+    int id;
+    char name[50];
+    int room;
+    char block[10];
+    struct Student *next;
+} Student;
+
+Student *head = NULL;
+
+// Create a new student node
+Student* createStudent(int id, char name[], int room, char block[]) {
+    Student *newNode = (Student*)malloc(sizeof(Student));
+    newNode->id = id;
+    strcpy(newNode->name, name);
+    newNode->room = room;
+    strcpy(newNode->block, block);
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Add student to list
+void addStudent(int id, char name[], int room, char block[]) {
+    Student *newNode = createStudent(id, name, room, block);
+    newNode->next = head;
+    head = newNode;
+    printf("Student %s added successfully!\n", name);
+}
+
+// Remove student by ID
+void removeStudent(int id) {
+    Student *temp = head, *prev = NULL;
+
+    while (temp != NULL && temp->id != id) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Student with ID %d not found!\n", id);
+        return;
+    }
+
+    if (prev == NULL) head = temp->next;
+    else prev->next = temp->next;
+
+    printf("Student %s removed.\n", temp->name);
+    free(temp);
+}
+
+// Search by name
+void searchByName(char name[]) {
+    Student *temp = head;
+    while (temp != NULL) {
+        if (strcmp(temp->name, name) == 0) {
+            printf("Found: ID=%d, Name=%s, Room=%d, Block=%s\n",
+                   temp->id, temp->name, temp->room, temp->block);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Student with name %s not found!\n", name);
+}
+
+// Search by room number
+void searchByRoom(int room) {
+    Student *temp = head;
+    while (temp != NULL) {
+        if (temp->room == room) {
+            printf("Found: ID=%d, Name=%s, Room=%d, Block=%s\n",
+                   temp->id, temp->name, temp->room, temp->block);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Room %d not found!\n", room);
+}
+
+// Display all students
+void displayStudents() {
+    Student *temp = head;
+    if (temp == NULL) {
+        printf("No records available.\n");
+        return;
+    }
+    printf("Hostel Allotments:\n");
+    while (temp != NULL) {
+        printf("ID=%d | Name=%s | Room=%d | Block=%s\n",
+               temp->id, temp->name, temp->room, temp->block);
+        temp = temp->next;
+    }
+}
+
+// Count students per block
+void countPerBlock() {
+    int countA = 0, countB = 0, countC = 0;
+    Student *temp = head;
+    while (temp != NULL) {
+        if (strcmp(temp->block, "A") == 0) countA++;
+        else if (strcmp(temp->block, "B") == 0) countB++;
+        else if (strcmp(temp->block, "C") == 0) countC++;
+        temp = temp->next;
+    }
+    printf("Students per Block:\n");
+    printf("Block A: %d\n", countA);
+    printf("Block B: %d\n", countB);
+    printf("Block C: %d\n", countC);
+}
+
+// Menu-driven program
+int main() {
+    int choice, id, room;
+    char name[50], block[10];
+
+    while (1) {
+        printf("\n--- Hostel Allotment Menu ---\n");
+        printf("1. Add Student\n");
+        printf("2. Remove Student\n");
+        printf("3. Search by Name\n");
+        printf("4. Search by Room\n");
+        printf("5. Display All Students\n");
+        printf("6. Count Students per Block\n");
+        printf("7. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter ID, Name, Room, Block: ");
+                scanf("%d %s %d %s", &id, name, &room, block);
+                addStudent(id, name, room, block);
+                break;
+            case 2:
+                printf("Enter ID to remove: ");
+                scanf("%d", &id);
+                removeStudent(id);
+                break;
+            case 3:
+                printf("Enter Name: ");
+                scanf("%s", name);
+                searchByName(name);
+                break;
+            case 4:
+                printf("Enter Room Number: ");
+                scanf("%d", &room);
+                searchByRoom(room);
+                break;
+            case 5:
+                displayStudents();
+                break;
+            case 6:
+                countPerBlock();
+                break;
+            case 7:
+                printf("Exiting...\n");
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+}
